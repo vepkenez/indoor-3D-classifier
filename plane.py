@@ -1,9 +1,9 @@
 import numpy as np
 import math
 
-def rotyaxis(x, z, angle):
-    z = x * math.cos(angle) - z *  math.sin(angle)
-    x = x * math.sin(angle) + z * math.cos(angle) 
+def rotyaxis(xa, za, angle):
+    z = xa * math.cos(angle) - za *  math.sin(angle)
+    x = xa * math.sin(angle) + za * math.cos(angle) 
 
     return x, z
 
@@ -29,9 +29,11 @@ def plane(width=10, height=10, subd=10, roty=0, noise=.5):
         y = iy * segment_height - height_half
 
         for ix in range(gridX1):
-
             x = ix * segment_width - width_half
-            vertices.append( [x, - y, np.random.normal()*noise] )
+
+
+            x, z  = rotyaxis(x, np.random.normal()*noise, roty)
+            vertices.append( [x, - y, z] )
 
 
     for iy in range(gridY):
