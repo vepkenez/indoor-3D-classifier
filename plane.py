@@ -4,10 +4,38 @@ import math
 def rotyaxis(xa, za, angle):
     z = xa * math.cos(angle) - za *  math.sin(angle)
     x = xa * math.sin(angle) + za * math.cos(angle) 
-
     return x, z
 
-def plane(width=10, height=10, subd=10, roty=0, noise=.5):
+def rotxaxis(ya, za, angle):
+    
+    """
+    y' = y*cos q - z*sin q
+    z' = y*sin q + z*cos q
+    x' = x
+
+    """
+
+    y = ya * math.cos(angle) - za * math.sin(angle) 
+    z = ya * math.sin(angle) + za *  math.cos(angle)
+    
+    return y, z
+
+def rotx(verts, angle):
+    out = []
+    for x, y, z in verts:
+        y, z = rotxaxis(y, z, angle)
+        out.append([x, y, z])
+    return out
+
+def roty(verts, angle):
+    out = []
+    for x, y, z in verts:
+        x, z = rotyaxis(x, z, angle)
+        out.append([x, y, z])
+    return out
+    
+
+def plane(width=10, height=10, subd=10, yrot=0, xrot=0, noise=0):
 
     width_half = width / 2
     height_half = height / 2
@@ -31,11 +59,10 @@ def plane(width=10, height=10, subd=10, roty=0, noise=.5):
         for ix in range(gridX1):
             x = ix * segment_width - width_half
 
+            vertices.append( [x, - y, np.random.normal()*noise] )
 
-            x, z  = rotyaxis(x, np.random.normal()*noise, roty)
-            vertices.append( [x, - y, z] )
-
-
+    vertices = rotx(vertices, xrot)
+    vertices = roty(vertices, yrot)
     for iy in range(gridY):
 
         for ix in range(gridX):
