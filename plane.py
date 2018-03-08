@@ -1,22 +1,49 @@
-import vpython
-vertices = numpy.array([[ 0.82667452,  0.89591247,  0.91638623],
-                        [ 0.10045271,  0.50575086,  0.73920507],
-                        [ 0.06341482,  0.17413744,  0.6316301 ],
-                        [ 0.75613029,  0.82585983,  0.10012549],
-                        [ 0.45498342,  0.5636221 ,  0.10940527],
-                        [ 0.46079863,  0.54088544,  0.1519899 ],
-                        [ 0.61961934,  0.78550213,  0.43406491],
-                        [ 0.12654252,  0.7514213 ,  0.18265301],
-                        [ 0.94441365,  0.00428673,  0.46893573],
-                        [ 0.79083297,  0.70198129,  0.75670947]] )
+import numpy as np
+import math
 
-verts = 
-faces = numpy.array( [ [0,1,2],
-                       [0,2,3], 
-                       [1,2,3], 
-                       [1,4,5], 
-                       [2,5,6], 
-                       [6,3,7], 
-                       [9,8,7] ] )
+def rotyaxis(x, z, angle):
+    z = x * math.cos(angle) - z *  math.sin(angle)
+    x = x * math.sin(angle) + z * math.cos(angle) 
+
+    return x, z
+
+def plane(width=10, height=10, subd=10, roty=0, noise=.5):
+
+    width_half = width / 2
+    height_half = height / 2
+
+    gridX = subd
+    gridY = subd
+
+    gridX1 = gridX + 1
+    gridY1 = gridY + 1
+
+    segment_width = width / gridX
+    segment_height = height / gridY
+
+    faces = []
+    vertices = []
+
+    for iy in range(gridY1):
+
+        y = iy * segment_height - height_half
+
+        for ix in range(gridX1):
+
+            x = ix * segment_width - width_half
+            vertices.append( [x, - y, np.random.normal()*noise] )
 
 
+    for iy in range(gridY):
+
+        for ix in range(gridX):
+
+            a = ix + gridX1 * iy
+            b = ix + gridX1 * ( iy + 1 )
+            c = ( ix + 1 ) + gridX1 * ( iy + 1 )
+            d = ( ix + 1 ) + gridX1 * iy
+
+            faces.append([a, b, d])
+            faces.append([b, c, d])
+
+    return np.array(vertices), np.array(faces)
